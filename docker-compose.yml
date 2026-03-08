@@ -79,5 +79,17 @@ services:
       - ./ingestion:/opt/airflow/ingestion
     command: scheduler
 
+  fastapi:
+    image: python:3.11-slim
+    container_name: bank_fastapi
+    depends_on:
+      - postgres
+    working_dir: /app
+    command: /bin/bash -c "pip install fastapi uvicorn psycopg2-binary && uvicorn main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/app
+
 volumes:
   postgres_data:
