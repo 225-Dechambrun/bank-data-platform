@@ -1,0 +1,5 @@
+account_id,customer_id,type,balance
+1,1,current,5000
+2,2,savings,12000
+3,3,current,2000
+4,4,current,4500

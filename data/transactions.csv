@@ -1,0 +1,5 @@
+transaction_id,account_id,amount,type,date
+1,1,200,payment,2025-01-01
+2,1,300,transfer,2025-01-02
+3,2,500,withdrawal,2025-01-03
+4,3,150,payment,2025-01-04
