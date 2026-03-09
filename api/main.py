@@ -1,14 +1,16 @@
 from fastapi import FastAPI
+import os
 import psycopg2
 
 app = FastAPI(title="Bank Data Platform API")
 
 def get_connection():
     return psycopg2.connect(
-        host="bank_postgres",
-        dbname="bank",
-        user="data",
-        password="data"
+        host=os.getenv("DB_HOST"),
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        port=os.getenv("DB_PORT", "5432")
     )
 
 @app.get("/")
@@ -93,4 +95,3 @@ def top_customers(limit: int = 10):
         })
 
     return result
-
