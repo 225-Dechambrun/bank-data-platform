@@ -1,78 +1,64 @@
+import os
 import pandas as pd
 import requests
 import streamlit as st
 
 st.set_page_config(page_title="Bank Data Platform Dashboard", layout="wide")
 
-API_BASE_URL = "http://bank_fastapi:8000"
+API_BASE_URL = os.getenv("API_BASE_URL")
+
+if not API_BASE_URL:
+    try:
+        API_BASE_URL = st.secrets["API_BASE_URL"]
+    except Exception:
+        API_BASE_URL = "http://localhost:8000"
 
 st.title("Bank Data Platform Dashboard")
-
 st.markdown("Visualization of banking KPIs exposed by FastAPI")
 
-# KPI by type
+
+def fetch_data(endpoint):
+    try:
+        response = requests.get(f"{API_BASE_URL}{endpoint}", timeout=20)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        st.error(f"Cannot load {endpoint} : {e}")
+        return None
+
+
 st.header("Transactions by type")
+data_type = fetch_data("/kpi/by-type")
 
-response_type = requests.get(f"{API_BASE_URL}/kpi/by-type")
-
-if response_type.status_code == 200:
-
-    data_type = response_type.json()
+if data_type is not None:
     df_type = pd.DataFrame(data_type)
+    st.dataframe(df_type, width="stretch")
 
-    st.dataframe(df_type, use_container_width=True)
+    if not df_type.empty:
+        st.bar_chart(df_type.set_index("type")["montant_total"])
 
-    st.bar_chart(df_type.set_index("type")["montant_total"])
 
-else:
-
-    st.error("Cannot load /kpi/by-type")
-
-# Daily KPI
 st.header("Daily transactions")
+data_daily = fetch_data("/kpi/daily")
 
-response_daily = requests.get(f"{API_BASE_URL}/kpi/daily")
-
-if response_daily.status_code == 200:
-
-    data_daily = response_daily.json()
+if data_daily is not None:
     df_daily = pd.DataFrame(data_daily)
-
-    st.dataframe(df_daily, use_container_width=True)
+    st.dataframe(df_daily, width="stretch")
 
     if not df_daily.empty:
-
         df_daily["date"] = pd.to_datetime(df_daily["date"])
         df_daily = df_daily.sort_values("date")
-
         st.line_chart(df_daily.set_index("date")["montant_total"])
 
-else:
 
-    st.error("Cannot load /kpi/daily")
-
-# Top customers
 st.header("Top customers")
-
 limit = st.slider("Number of customers", 5, 20, 10)
 
-response_customers = requests.get(
-    f"{API_BASE_URL}/kpi/top-customers?limit={limit}"
-)
+data_customers = fetch_data(f"/kpi/top-customers?limit={limit}")
 
-if response_customers.status_code == 200:
-
-    data_customers = response_customers.json()
+if data_customers is not None:
     df_customers = pd.DataFrame(data_customers)
-
-    st.dataframe(df_customers, use_container_width=True)
+    st.dataframe(df_customers, width="stretch")
 
     if not df_customers.empty:
-
-        st.bar_chart(
-            df_customers.set_index("customer_id")["montant_total"]
-        )
-
-else:
-
-    st.error("Cannot load /kpi/top-customers")
+        st.bar_chart(df_customers.set_index("customer_id")["montant_total"])

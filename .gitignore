@@ -4,3 +4,4 @@ airflow/dags/__pycache__/
 **/__pycache__/
 *.pyc
 .env
+.streamlit/secrets.toml
