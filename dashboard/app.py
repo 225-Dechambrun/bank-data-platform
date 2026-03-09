@@ -1,64 +1,70 @@
-import os
+from pathlib import Path
 import pandas as pd
-import requests
 import streamlit as st
 
 st.set_page_config(page_title="Bank Data Platform Dashboard", layout="wide")
 
-API_BASE_URL = os.getenv("API_BASE_URL")
-
-if not API_BASE_URL:
-    try:
-        API_BASE_URL = st.secrets["API_BASE_URL"]
-    except Exception:
-        API_BASE_URL = "http://localhost:8000"
+BASE_DIR = Path(__file__).parent
+DATA_DIR = BASE_DIR / "data"
 
 st.title("Bank Data Platform Dashboard")
-st.markdown("Visualization of banking KPIs exposed by FastAPI")
+st.markdown("Visualization of banking KPIs from local CSV files")
 
+def load_csv(filename):
+    path = DATA_DIR / filename
+    if not path.exists():
+        st.error(f"File not found: {path}")
+        st.stop()
 
-def fetch_data(endpoint):
-    try:
-        response = requests.get(f"{API_BASE_URL}{endpoint}", timeout=20)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        st.error(f"Cannot load {endpoint} : {e}")
-        return None
+    df = pd.read_csv(path)
 
+    # Nettoyage des noms de colonnes
+    df.columns = (
+        df.columns.astype(str)
+        .str.replace("\ufeff", "", regex=False)
+        .str.strip()
+    )
 
+    return df
+
+# KPI by type
 st.header("Transactions by type")
-data_type = fetch_data("/kpi/by-type")
+df_type = load_csv("kpi_by_type.csv")
 
-if data_type is not None:
-    df_type = pd.DataFrame(data_type)
-    st.dataframe(df_type, width="stretch")
+st.write("Columns in kpi_by_type.csv :", list(df_type.columns))
+st.dataframe(df_type, width="stretch")
 
-    if not df_type.empty:
-        st.bar_chart(df_type.set_index("type")["montant_total"])
+if not df_type.empty and "type" in df_type.columns and "montant_total" in df_type.columns:
+    st.bar_chart(df_type.set_index("type")["montant_total"])
+else:
+    st.error(f"Expected columns: type, montant_total | Found: {list(df_type.columns)}")
 
-
+# Daily KPI
 st.header("Daily transactions")
-data_daily = fetch_data("/kpi/daily")
+df_daily = load_csv("kpi_daily.csv")
 
-if data_daily is not None:
-    df_daily = pd.DataFrame(data_daily)
-    st.dataframe(df_daily, width="stretch")
+st.write("Columns in kpi_daily.csv :", list(df_daily.columns))
+st.dataframe(df_daily, width="stretch")
 
-    if not df_daily.empty:
-        df_daily["date"] = pd.to_datetime(df_daily["date"])
-        df_daily = df_daily.sort_values("date")
-        st.line_chart(df_daily.set_index("date")["montant_total"])
+if not df_daily.empty and "date" in df_daily.columns and "montant_total" in df_daily.columns:
+    df_daily["date"] = pd.to_datetime(df_daily["date"])
+    df_daily = df_daily.sort_values("date")
+    st.line_chart(df_daily.set_index("date")["montant_total"])
+else:
+    st.error(f"Expected columns: date, montant_total | Found: {list(df_daily.columns)}")
 
-
+# Top customers
 st.header("Top customers")
+df_customers = load_csv("kpi_top_customers.csv")
+
+st.write("Columns in kpi_top_customers.csv :", list(df_customers.columns))
+
 limit = st.slider("Number of customers", 5, 20, 10)
+df_customers_display = df_customers.head(limit)
 
-data_customers = fetch_data(f"/kpi/top-customers?limit={limit}")
+st.dataframe(df_customers_display, width="stretch")
 
-if data_customers is not None:
-    df_customers = pd.DataFrame(data_customers)
-    st.dataframe(df_customers, width="stretch")
-
-    if not df_customers.empty:
-        st.bar_chart(df_customers.set_index("customer_id")["montant_total"])
+if not df_customers_display.empty and "customer_id" in df_customers_display.columns and "montant_total" in df_customers_display.columns:
+    st.bar_chart(df_customers_display.set_index("customer_id")["montant_total"])
+else:
+    st.error(f"Expected columns: customer_id, montant_total | Found: {list(df_customers_display.columns)}")
