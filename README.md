@@ -1,5 +1,8 @@
 ﻿# 🏦 Bank Data Platform Dashboard
 
+## Live Demo
+[Voir le dashboard en ligne](https://3fwg7htjrwvzcpnwsvabsx.streamlit.app/)
+
 An interactive banking KPI dashboard built with **Streamlit**, powered by **CSV data generated from a local data pipeline**.
 
 This project showcases a simple but professional analytics workflow:
@@ -75,3 +78,4 @@ bank-data-platform/
 ├── export_kpi.py           # Script to generate dashboard CSV files
 ├── requirements.txt        # Streamlit dependencies
 └── README.md
+
