@@ -1,84 +1,77 @@
-# Bank Data Platform
+﻿# 🏦 Bank Data Platform Dashboard
 
-Bank Data Platform est un projet de Data Engineering qui simule une plateforme de donn�es bancaire de bout en bout.
+An interactive banking KPI dashboard built with **Streamlit**, powered by **CSV data generated from a local data pipeline**.
 
-## Objectif
+This project showcases a simple but professional analytics workflow:
+- data generation and processing
+- KPI extraction
+- dashboard visualization
+- online deployment with Streamlit
 
-Construire un pipeline de donn�es capable de :
+---
 
-- ing�rer des donn�es bancaires depuis des fichiers CSV
-- charger les donn�es brutes dans PostgreSQL
-- transformer les donn�es en mod�le analytique
-- calculer des KPI m�tier
-- orchestrer le pipeline avec Airflow
-- exposer les KPI via une API FastAPI
+## 🚀 Project Overview
 
-## Architecture
+The **Bank Data Platform Dashboard** is a data visualization project designed to monitor key banking indicators through a clean and interactive interface.
 
-CSV files
-   �
-   ?
-Airflow DAG
-(load_raw_data.py)
-   �
-   ?
-PostgreSQL raw tables
-(customers_raw, accounts_raw, transactions_raw)
-   �
-   ?
-SQL warehouse
-(dim_customers, dim_accounts, dim_date, fact_transactions)
-   �
-   ?
-KPI views
-(vw_daily_kpi, vw_kpi_by_type, vw_kpi_by_customer)
-   �
-   ?
-FastAPI
-(/kpi/by-type, /kpi/daily, /kpi/top-customers)
+The dashboard displays:
+- transaction volumes by type
+- daily transaction trends
+- top customers by total amount
+- summary KPI cards
+- interactive filters and detailed tables
 
-## Technologies utilis�es
+This project was initially designed as a broader banking data platform architecture including:
+- **PostgreSQL** for storage
+- **FastAPI** for KPI exposure
+- **Airflow** for orchestration
+- **Docker** for local environment management
+- **Streamlit** for dashboarding
 
-- Python
-- PostgreSQL
-- Docker
-- Apache Airflow
-- FastAPI
-- SQL
-- Git / GitHub
+For the deployed demo version, the dashboard reads from **local CSV files** generated from the pipeline, making the application lightweight, stable, and easy to share online.
 
-## Volum�trie des donn�es
+---
 
-- 200 clients
-- 300 comptes
-- 10000 transactions
+## ✨ Features
 
-## API
+- Premium Streamlit dashboard layout
+- KPI summary cards
+- Transaction type filtering
+- Daily amount evolution chart
+- Top customer analysis
+- Expandable detailed data tables
+- Online deployment-ready version
+- Clean and readable banking analytics demo
 
-Documentation :
+---
 
-http://localhost:8000/docs
+## 🛠️ Tech Stack
 
-Endpoints disponibles :
+- **Python**
+- **Streamlit**
+- **Pandas**
+- **PostgreSQL**
+- **FastAPI**
+- **Apache Airflow**
+- **Docker**
+- **Git & GitHub**
 
-GET /kpi/by-type  
-GET /kpi/daily  
-GET /kpi/top-customers  
+---
 
-## Lancer le projet
+## 📂 Project Structure
 
-D�marrer les services :
-
-docker compose up -d
-
-G�n�rer les donn�es :
-
-python generate_data.py
-
-D�clencher le pipeline :
-
-docker exec -it airflow_scheduler airflow dags trigger bank_pipeline
-
-## Auteur
-
-Stephane Dechambrun
+```bash
+bank-data-platform/
+│
+├── airflow/                # Airflow DAGs and orchestration files
+├── api/                    # FastAPI backend
+├── dashboard/              # Streamlit dashboard
+│   ├── app.py              # Main Streamlit application
+│   └── data/               # CSV files used by the deployed demo
+├── data/                   # Raw/generated source data
+├── ingestion/              # Data ingestion scripts
+├── sql/                    # SQL scripts and views
+├── docker-compose.yml      # Local services orchestration
+├── export_kpi.py           # Script to generate dashboard CSV files
+├── requirements.txt        # Streamlit dependencies
+└── README.md
