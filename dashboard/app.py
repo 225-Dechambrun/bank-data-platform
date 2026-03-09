@@ -1,4 +1,4 @@
-from pathlib import Path
+﻿from pathlib import Path
 import pandas as pd
 import streamlit as st
 
@@ -18,7 +18,6 @@ def load_csv(filename):
 
     df = pd.read_csv(path)
 
-    # Nettoyage des noms de colonnes
     df.columns = (
         df.columns.astype(str)
         .str.replace("\ufeff", "", regex=False)
@@ -31,7 +30,6 @@ def load_csv(filename):
 st.header("Transactions by type")
 df_type = load_csv("kpi_by_type.csv")
 
-st.write("Columns in kpi_by_type.csv :", list(df_type.columns))
 st.dataframe(df_type, width="stretch")
 
 if not df_type.empty and "type" in df_type.columns and "montant_total" in df_type.columns:
@@ -43,7 +41,6 @@ else:
 st.header("Daily transactions")
 df_daily = load_csv("kpi_daily.csv")
 
-st.write("Columns in kpi_daily.csv :", list(df_daily.columns))
 st.dataframe(df_daily, width="stretch")
 
 if not df_daily.empty and "date" in df_daily.columns and "montant_total" in df_daily.columns:
@@ -56,8 +53,6 @@ else:
 # Top customers
 st.header("Top customers")
 df_customers = load_csv("kpi_top_customers.csv")
-
-st.write("Columns in kpi_top_customers.csv :", list(df_customers.columns))
 
 limit = st.slider("Number of customers", 5, 20, 10)
 df_customers_display = df_customers.head(limit)
