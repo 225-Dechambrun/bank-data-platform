@@ -78,4 +78,8 @@ bank-data-platform/
 ├── export_kpi.py           # Script to generate dashboard CSV files
 ├── requirements.txt        # Streamlit dependencies
 └── README.md
+```
 
+## Auteur
+
+**Dechambrun Gohirie**
