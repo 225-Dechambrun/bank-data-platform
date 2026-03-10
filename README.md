@@ -83,3 +83,9 @@ bank-data-platform/
 ## Auteur
 
 **Dechambrun Gohirie**
+
+## Capture du dashboard
+
+<p align="center">
+  <img src="images/dashboard_capture.png" alt="Capture du dashboard" width="900">
+</p>
